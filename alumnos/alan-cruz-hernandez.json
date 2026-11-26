@@ -1,0 +1,15 @@
+{
+  "usuario": "alan-cruz-hernandez",
+  "nombre": "Alan Enrique Cruz Hernández",
+  "frase": "Construyendo ideas paso a paso con código limpio y diseño claro.",
+  "emoji": "🚀",
+  "color": "#D69A3F",
+  "misiones": {
+    "node": true,
+    "nextTailwind": true,
+    "v0": true,
+    "opencode": true,
+    "supabase": true
+  },
+  "promptFavorito": "Diseña una interfaz educativa minimalista estilo Sketch Doodle Art en Next.js y Tailwind CSS usando únicamente #FEFEFA, #123850 y #D69A3F."
+}
