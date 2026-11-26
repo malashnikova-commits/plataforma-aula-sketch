@@ -1,0 +1,15 @@
+{
+  "usuario": "malashnikova-commits",
+  "nombre": "Alan Isaac Camacho Mondragón",
+  "frase": "Sigue domando mujeres, aunque no las cautives. Un buen hombre siembra flores, aunque no las cultive.",
+  "emoji": "👽",
+  "color": "#D69A3F",
+  "misiones": {
+    "node": true,
+    "nextTailwind": true,
+    "v0": true,
+    "opencode": true,
+    "supabase": true
+  },
+  "promptFavorito": "Lee src/app/alumnos/malashnikova-commits/page.tsx. Crea un componente cliente Reacciones.tsx con 3 botones de emoji que cuenten clics y un modo claro/oscuro estilo sketch doodle en Baby Powder, Gibraltar Sea y Gold Coast."
+}

@@ -1,0 +1,15 @@
+{
+  "usuario": "ax3l-mv",
+  "nombre": "Axel Enrique Morales Villalon",
+  "frase": "El weso",
+  "emoji": "🤍",
+  "color": "#D4AF37",
+  "misiones": {
+    "node": true,
+    "nextTailwind": true,
+    "v0": true,
+    "opencode": true,
+    "supabase": true
+  },
+  "promptFavorito": "Ahora crea un componente cliente ContadorNavidad.tsx dentro de src/app/alumnos/ax3l-mv/ con un contador de días restantes para Navidad con estilo navideño en colores rojo y blanco, e intégralo en src/app/alumnos/ax3l-mv/page.tsx."
+}
