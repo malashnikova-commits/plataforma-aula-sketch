@@ -3,7 +3,7 @@
 import { useState, type ReactNode } from "react";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { SketchCard } from "@/components/sketch/SketchCard";
-import { CODIGO_TUTOR_DEMO, type RolPlataforma } from "@/lib/auth";
+import { type RolPlataforma } from "@/lib/auth";
 import { playChime, playPop, playToggle } from "@/lib/sonidosGlobal";
 
 const AVATARES = ["👽", "🦊", "🚀", "🎨", "🦉", "⚡"];
@@ -109,7 +109,7 @@ export function AuthGate({ children }: { children: ReactNode }) {
               htmlFor="auth-id"
               className="mb-1 block font-mono text-xs font-black text-[#123850]"
             >
-              Usuario o correo
+              Usuario, cuenta o correo
             </label>
             <input
               id="auth-id"
@@ -117,7 +117,7 @@ export function AuthGate({ children }: { children: ReactNode }) {
               required
               value={identificador}
               onChange={(e) => setIdentificador(e.target.value)}
-              placeholder="ej. ana-dev"
+              placeholder="Número de cuenta o usuario"
               className="w-full rounded-xl border-2 border-[#123850] bg-[#FEFEFA] px-3 py-2 text-sm font-bold text-[#123850]"
             />
           </div>
@@ -227,7 +227,7 @@ export function AuthGate({ children }: { children: ReactNode }) {
                     required
                     value={codigoTutor}
                     onChange={(e) => setCodigoTutor(e.target.value)}
-                    placeholder={`Demo local: ${CODIGO_TUTOR_DEMO}`}
+                    placeholder="Código de invitación"
                     className="w-full rounded-xl border-2 border-[#123850] bg-[#FEFEFA] px-3 py-2 font-mono text-sm font-bold text-[#123850]"
                   />
                 </div>

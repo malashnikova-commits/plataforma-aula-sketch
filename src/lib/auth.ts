@@ -50,6 +50,83 @@ interface RegistroLocalUsuario {
 const CLAVE_USUARIOS = "plataforma-usuarios-v1";
 const CLAVE_SESION = "plataforma-sesion-v1";
 
+interface CuentaPredefinida {
+  userId: string;
+  identificador: string;
+  alias: string;
+  avatar: string;
+  rol: RolPlataforma;
+  saltHex: string;
+  pbkdf2Hex: string;
+  createdAt: string;
+}
+
+const CUENTAS_PREDEFINIDAS: CuentaPredefinida[] = [
+  {
+    userId: "usr-tutor-319338755",
+    identificador: "319338755",
+    alias: "Alan Isaac Camacho Mondragón",
+    avatar: "👽",
+    rol: "tutor",
+    saltHex: "24a5e9c9e529d56987c7261f2a7773ec",
+    pbkdf2Hex: "7aa56220784a2d7fdb9f9c7ef37542c0ace7d464595b0e231d6b9da664ccc5ac",
+    createdAt: "2026-01-01T00:00:00.000Z",
+  },
+  {
+    userId: "usr-alumno-426075086",
+    identificador: "426075086",
+    alias: "Alan Enrique Cruz Hernández",
+    avatar: "🚀",
+    rol: "alumnado",
+    saltHex: "13e80d75b7c33da28635e58cee8984bc",
+    pbkdf2Hex: "8751d835504bfec366ea5b34da03143857e1606fc3a24e7fad7551747558ef62",
+    createdAt: "2026-01-01T00:00:00.000Z",
+  },
+];
+
+function hexABytes(hex: string): Uint8Array<ArrayBuffer> {
+  const pares = hex.match(/.{1,2}/g) ?? [];
+  const buffer = new ArrayBuffer(pares.length);
+  const view = new Uint8Array(buffer);
+  for (let i = 0; i < pares.length; i++) {
+    view[i] = parseInt(pares[i], 16);
+  }
+  return view;
+}
+
+export async function derivarPBKDF2Hex(password: string, saltHex: string): Promise<string> {
+  const subtle = globalThis.crypto.subtle;
+  const clave = await subtle.importKey(
+    "raw",
+    new TextEncoder().encode(password),
+    "PBKDF2",
+    false,
+    ["deriveBits"]
+  );
+  const bits = await subtle.deriveBits(
+    {
+      name: "PBKDF2",
+      salt: hexABytes(saltHex),
+      iterations: 120000,
+      hash: "SHA-256",
+    },
+    clave,
+    256
+  );
+  return Array.from(new Uint8Array(bits))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+}
+
+function compararTiempoConstante(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  let diff = 0;
+  for (let i = 0; i < a.length; i++) {
+    diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  }
+  return diff === 0;
+}
+
 export const CODIGO_TUTOR_DEMO =
   process.env.NEXT_PUBLIC_TUTOR_CODE?.trim() || "TUTOR2026";
 
@@ -137,6 +214,9 @@ export async function registrarUsuario(params: {
   if (params.rol === "tutor" && (params.codigoTutor ?? "").trim() !== CODIGO_TUTOR_DEMO) {
     return { ok: false, error: "Código de invitación docente inválido." };
   }
+  if (CUENTAS_PREDEFINIDAS.some((c) => c.identificador === idNorm)) {
+    return { ok: false, error: "Esta cuenta ya está habilitada. Entra desde Iniciar sesión." };
+  }
 
   if (supabaseConfigurado() && idNorm.includes("@")) {
     const supabase = getSupabase();
@@ -163,6 +243,25 @@ export async function registrarUsuario(params: {
         return { ok: true, usuario: sesion };
       }
     }
+  }
+
+  const predefinida = CUENTAS_PREDEFINIDAS.find((c) => c.identificador === idNorm);
+  if (predefinida) {
+    const hashCalculado = await derivarPBKDF2Hex(params.password, predefinida.saltHex);
+    if (!compararTiempoConstante(hashCalculado, predefinida.pbkdf2Hex)) {
+      return { ok: false, error: "Contraseña incorrecta." };
+    }
+    const sesion: UsuarioSesion = {
+      userId: predefinida.userId,
+      identificador: predefinida.identificador,
+      alias: predefinida.alias,
+      avatar: predefinida.avatar,
+      rol: predefinida.rol,
+      modo: "local",
+      createdAt: predefinida.createdAt,
+    };
+    guardarSesionActivaLocal(sesion);
+    return { ok: true, usuario: sesion };
   }
 
   const existentes = leerUsuariosLocales();
@@ -231,6 +330,25 @@ export async function iniciarSesionUsuario(params: {
         return { ok: true, usuario: sesion };
       }
     }
+  }
+
+  const predefinida = CUENTAS_PREDEFINIDAS.find((c) => c.identificador === idNorm);
+  if (predefinida) {
+    const hashCalculado = await derivarPBKDF2Hex(params.password, predefinida.saltHex);
+    if (!compararTiempoConstante(hashCalculado, predefinida.pbkdf2Hex)) {
+      return { ok: false, error: "Contraseña incorrecta." };
+    }
+    const sesion: UsuarioSesion = {
+      userId: predefinida.userId,
+      identificador: predefinida.identificador,
+      alias: predefinida.alias,
+      avatar: predefinida.avatar,
+      rol: predefinida.rol,
+      modo: "local",
+      createdAt: predefinida.createdAt,
+    };
+    guardarSesionActivaLocal(sesion);
+    return { ok: true, usuario: sesion };
   }
 
   const existentes = leerUsuariosLocales();
